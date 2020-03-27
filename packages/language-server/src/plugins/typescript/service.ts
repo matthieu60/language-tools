@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts, { ScriptKind } from 'typescript';
 import { DocumentSnapshot } from './DocumentSnapshot';
 import { isSvelte } from './utils';
 import { dirname } from 'path';
@@ -68,6 +68,10 @@ export function createLanguageService(
     const host: ts.LanguageServiceHost = {
         getCompilationSettings: () => compilerOptions,
         getScriptFileNames: () => Array.from(new Set([...files, ...Array.from(documents.keys())])),
+        getScriptKind: (fileName: string) => {
+            const doc = getSvelteSnapshot(fileName);
+            return doc ? doc.scriptKind : ScriptKind.Unknown;
+        },
         getScriptVersion(fileName: string) {
             const doc = getSvelteSnapshot(fileName);
             return doc ? String(doc.version) : '0';
